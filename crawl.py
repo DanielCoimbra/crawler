@@ -25,6 +25,31 @@ def pages_gen():
 		yield get_tvalues(session, ''.join(l_url))	# soup.find_all returns a list, so
 			#print(type(page)
 
+def get_page(page_n):
+	page_data={}
+	l_url = list(URL)
+	l_url[64] = page_n
+	try:
+		page = get_tvalues(session, ''.join(l_url))
+	except:
+		return "error"
+	for fish in fish_gen(page):
+		l = list(fish)
+		f=Fish(
+			order = l[0].contents[0] or 'N/A',
+			family = l[2].contents[0] or 'N/A',
+			species = l[4].a.contents[0]  or 'N/A',
+			ocurrence = l[5].contents[0]  or 'N/A',
+			fishbase_name = l[6].contents[0]  or 'N/A',
+			name = l[7].contents[0] or 'N/A',
+			link = l[4].a['href'] or 'N/A',
+			_id= re.search('id=[0-9]+',l[4].a['href']).group()[3:] or 'N/A' #
+		
+		)
+		page_data[f._id] = f.__dict__
+	return page_data
+
+
 def fish_gen(page):
 	for fish_row in page:
 		yield fish_row
@@ -46,16 +71,14 @@ class Fish():
 			pass
 
 def main():
-	with open("fishbase.json","r") as f:
-		data = json.load(f)
+	# with open("fishbase.json","r") as f:
+	# 	data = json.load(f)
 	
 	
 	for page in pages_gen():
+		page_data = {}
 		for fish in fish_gen(page):
 			l = list(fish)
-			print(l[4].a['href'])
-			regex = re.match('id=[0-9]+', l[4].a['href'])
-			print(regex)
 			f=Fish(
 				order = l[0].contents[0] or 'N/A',
 				family = l[2].contents[0] or 'N/A',
@@ -64,10 +87,16 @@ def main():
 				fishbase_name = l[6].contents[0]  or 'N/A',
 				name = l[7].contents[0] or 'N/A',
 				link = l[4].a['href'] or 'N/A',
-				#_id= re.match('id=[0-9]+',l[4].a['href']).group()[3:] or 'N/A' #
+				_id= re.search('id=[0-9]+',l[4].a['href']).group()[3:] or 'N/A' #
 			
 			)
-			print(f.__dict__)
+			page_data[f._id] = f.__dict__
+			yield page_data
+
+	#with open("fishbase.json", "w") as f:
+	#	json.dump(data, f)
+
+			
 
 
 main()
