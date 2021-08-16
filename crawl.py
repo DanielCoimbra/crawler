@@ -8,7 +8,9 @@ import re
 session = requests.Session()
 GET = '0'
 POST = '1'
-URL = "https://www.fishbase.se/Country/CountryChecklist.php?resultPage=1&c_code=076&vhabitat=all2&cpresence=present"
+TABLE_URL = "https://www.fishbase.se/Country/CountryChecklist.php?resultPage=1&c_code=076&vhabitat=all2&cpresence=present"
+FISH_BIO="https://www.fishbase.se/Country/CountrySpeciesSummary.php?c_code=076&id=" #Just append fish_id to url
+FISH_PICS="https://www.fishbase.se/photos/ThumbnailsSummary.php?ID=" #Just append fish_id to url
 
 def get_tvalues(session, url):
 	response = session.get(url)
@@ -17,15 +19,7 @@ def get_tvalues(session, url):
 	return values
 	
 
-def pages_gen():
-	l_url = list(URL)
-	for i in range(1,96):
-		l_url[64] = str(i) # iterates through the result_page url variable 
-		print(''.join(l_url))
-		yield get_tvalues(session, ''.join(l_url))	# soup.find_all returns a list, so
-			#print(type(page)
-
-def get_page(page_n):
+def get_page_json(page_n):
 	page_data={}
 	l_url = list(URL)
 	l_url[64] = page_n
@@ -49,6 +43,10 @@ def get_page(page_n):
 		page_data[f._id] = f.__dict__
 	return page_data
 
+def enter_fish_bio(id):
+	pass
+def more_images_fish(id)
+
 
 def fish_gen(page):
 	for fish_row in page:
@@ -67,40 +65,30 @@ class Fish():
 		self.link = link
 		self._id = _id
 
-		def get_images():
-			pass
+		
+def get_images():
+	pass
+		
+def get_bio():
+	pass
 
-def main():
-	# with open("fishbase.json","r") as f:
-	# 	data = json.load(f)
-	
-	
-	for page in pages_gen():
-		page_data = {}
-		for fish in fish_gen(page):
-			l = list(fish)
-			f=Fish(
-				order = l[0].contents[0] or 'N/A',
-				family = l[2].contents[0] or 'N/A',
-				species = l[4].a.contents[0]  or 'N/A',
-				ocurrence = l[5].contents[0]  or 'N/A',
-				fishbase_name = l[6].contents[0]  or 'N/A',
-				name = l[7].contents[0] or 'N/A',
-				link = l[4].a['href'] or 'N/A',
-				_id= re.search('id=[0-9]+',l[4].a['href']).group()[3:] or 'N/A' #
-			
-			)
-			page_data[f._id] = f.__dict__
-			yield page_data
+def t():
+	class Struct:
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
 
+		
 	#with open("fishbase.json", "w") as f:
 	#	json.dump(data, f)
 
-			
 
-
-main()
-	
+# def pages_gen():
+# 	l_url = list(URL)
+# 	for i in range(1,96):
+# 		l_url[64] = str(i) # iterates through the result_page url variable 
+# 		print(''.join(l_url))
+# 		yield get_tvalues(session, ''.join(l_url))	# soup.find_all returns a list, so
+# 			#print(type(page)
 
 #now = time.localtime()
 #f_name = f"{now.tm_year}_{now.tm_mon}_{now.tm_mday}_{now.tm_hour}_{now.tm_min}_{now.tm_sec}"
