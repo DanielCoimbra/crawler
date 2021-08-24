@@ -8,7 +8,7 @@ import re
 session = requests.Session()
 GET = '0'
 POST = '1'
-TABLE_URL = "https://www.fishbase.se/Country/CountryChecklist.php?resultPage=1&c_code=076&vhabitat=all2&cpresence=present"
+TABLE_URL = "https://www.fishbase.se/Country/CountryChecklist.php?resultPage=1&c_code=076&vhabitat=all2&cpresence=present&ext_pic=on"
 FISH_BIO="https://www.fishbase.se/Country/CountrySpeciesSummary.php?c_code=076&id=" #Just append fish_id to url
 FISH_PICS="https://www.fishbase.se/photos/ThumbnailsSummary.php?ID=" #Just append fish_id to url
 
@@ -21,14 +21,25 @@ def get_tvalues(session, url):
 
 def get_page_json(page_n):
 	page_data={}
-	l_url = list(URL)
-	l_url[64] = page_n
-	try:
-		page = get_tvalues(session, ''.join(l_url))
-	except:
-		return "error"
+	l_url = list(TABLE_URL)
+	l_url[64] = str(page_n)
+	#try:
+		
+	page = get_tvalues(session, ''.join(l_url))
+	# print(page)
+
+		
+	# except:
+	# 	return {"0":"error"}
+	cont=0
 	for fish in fish_gen(page):
+		
 		l = list(fish)
+		# print(cont)
+		try:
+			pic = l[8].img['src']
+		except:
+			pic = 'N/A'
 		f=Fish(
 			order = l[0].contents[0] or 'N/A',
 			family = l[2].contents[0] or 'N/A',
@@ -37,16 +48,31 @@ def get_page_json(page_n):
 			fishbase_name = l[6].contents[0]  or 'N/A',
 			name = l[7].contents[0] or 'N/A',
 			link = l[4].a['href'] or 'N/A',
+			pic = pic,
 			_id= re.search('id=[0-9]+',l[4].a['href']).group()[3:] or 'N/A' #
 		
 		)
+		cont+=1
 		page_data[f._id] = f.__dict__
 	return page_data
 
+def get_all_tables():
+	cont = 0
+	table_all_fish = {}
+	for i in range(1,96):
+		# print(cont)
+		cont+=1
+		table_all_fish.update(get_page_json(i))
+
+	return table_all_fish
+
+def get_fresh_tables():
+	pass
+
 def enter_fish_bio(id):
 	pass
-def more_images_fish(id)
-
+def more_images_fish(id):
+	pass
 
 def fish_gen(page):
 	for fish_row in page:
@@ -54,7 +80,7 @@ def fish_gen(page):
 
 class Fish():
         
-	def __init__(self, order='', family='', species='', ocurrence='', fishbase_name='', name='', link='', _id=''):
+	def __init__(self, order='', family='', species='', ocurrence='', fishbase_name='', name='', link='', _id='', pic=''):
 		
 		self.order = order
 		self.family = family
@@ -64,6 +90,7 @@ class Fish():
 		self.name = name
 		self.link = link
 		self._id = _id
+		self
 
 		
 def get_images():
@@ -74,8 +101,8 @@ def get_bio():
 
 def t():
 	class Struct:
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
+	    def __init__(self, **entries):
+    		self.__dict__.update(entries)
 
 		
 	#with open("fishbase.json", "w") as f:
