@@ -19,9 +19,9 @@ def get_tvalues(session, url):
 	return values
 	
 
-def get_page_json(page_n):
+def get_page_json(page_n, url):
 	page_data={}
-	l_url = list(TABLE_URL)
+	l_url = list(url)
 	l_url[64] = str(page_n)
 	#try:
 		
@@ -62,12 +62,77 @@ def get_all_tables():
 	for i in range(1,96):
 		# print(cont)
 		cont+=1
-		table_all_fish.update(get_page_json(i))
+		table_all_fish.update(get_page_json(i, TABLE_URL))
 
 	return table_all_fish
 
-def get_fresh_tables():
-	pass
+#def get_fresh_tables():
+#	table_fresh_fish = {}
+#	for i in range(1,72):
+		# table_fresh_fish.update(get_page_json(i, TABLE_URL.replace("all2", "fresh")))
+
+	#return table_fresh_fish
+
+#NOVAS FUNÇÕES
+def get_fish_id(page_n, url):
+	l_url = list(url)
+	l_url[64] = str(page_n)
+	#try:		
+	page = get_tvalues(session, ''.join(l_url))
+	# print(page)	
+	# except:
+	# 	return {"0":"error"}
+	cont=0
+	for fish in fish_gen(page):
+		l = list(fish)
+		_id = re.search('id=[0-9]+',l[4].a['href']).group()[3:] or 'N/A'		
+		cont+=1
+
+	return _id
+
+def get_freshwater_list():
+	fresh_fish_list = []
+	for i in range(1,72):
+		fresh_fish_list.append(get_fish_id(i, TABLE_URL.replace("all2", "fresh")))
+
+	return fresh_fish_list
+
+def get_saltwater_list():
+	salt_fish_list = []
+	for i in range(1,72):
+		salt_fish_list.append(get_fish_id(i, TABLE_URL.replace("all2", "fresh")))
+
+	return 	salt_fish_list
+
+def get_introduced_list():
+	introduced_fish_list = []
+	for i in range(1,72):
+		introduced_fish_list.append(get_fish_id(i, TABLE_URL.replace("all2", "fresh")))
+
+	return introduced_fish_list
+
+def get_endemic_list():
+	endemic_fish_list = []
+	for i in range(1,72):
+		endemic_fish_list.append(get_fish_id(i, TABLE_URL.replace("all2", "fresh")))
+
+	return endemic_fish_list
+
+#ALTERNATIVA AGIL
+def get_fish_list_by_atribute(pages_n, atribute):
+	#dict com 'atributo','key','page_n','lista'
+	# for atributo in dict:
+	# 	for i in range(atributo.page_n):
+	# 		atributo.lista.append(get_fish_id(i, TABLE_URL.replace("all2", atribute.key)))
+	# return dict
+	atribute_fish_list = []
+	for i in range(1,pages_n):
+		atribute_fish_list.append(get_fish_id(i, TABLE_URL.replace("all2", atribute)))
+
+	return atribute_fish_list
+
+
+
 
 def enter_fish_bio(id):
 	pass
