@@ -77,18 +77,31 @@ def get_fresh_tables():
 def get_fish_id(page_n, url):
 	l_url = list(url)
 	l_url[64] = str(page_n)
-	#try:		
+	lista=[]
 	page = get_tvalues(session, ''.join(l_url))
-	# print(page)	
-	# except:
-	# 	return {"0":"error"}
-	cont=0
+
 	for fish in fish_gen(page):
 		l = list(fish)
-		_id = re.search('id=[0-9]+',l[4].a['href']).group()[3:] or 'N/A'		
-		cont+=1
+		print(re.search('id=[0-9]+',l[4].a['href']).group()[3:])
+		_id = re.search('id=[0-9]+',l[4].a['href']).group()[3:] or 'N/A'
+		lista.append(_id)
+	return lista
 
-	return _id
+"""
+Lista que ja existe: all_fish.json
+for key in attr.keys():
+	checa pelos id's na all_fish.json
+	if checa == true:
+		all_fish.json[id] --> adiciona novo atributo
+
+all_fish.json.keys()
+
+
+
+
+"""
+
+
 
 def get_freshwater_list():
 	fresh_fish_list = []
@@ -100,26 +113,30 @@ def get_freshwater_list():
 def get_saltwater_list():
 	salt_fish_list = []
 	for i in range(1,72):
-		salt_fish_list.append(get_fish_id(i, TABLE_URL.replace("all2", "fresh")))
+		salt_fish_list.append(get_fish_id(i, TABLE_URL.replace("all2", "saltwater")))
 
 	return 	salt_fish_list
 
 def get_introduced_list():
 	introduced_fish_list = []
 	for i in range(1,72):
-		introduced_fish_list.append(get_fish_id(i, TABLE_URL.replace("all2", "fresh")))
+		introduced_fish_list.append(get_fish_id(i, TABLE_URL.replace("all2", "introduced")))
 
 	return introduced_fish_list
 
 def get_endemic_list():
 	endemic_fish_list = []
 	for i in range(1,72):
-		endemic_fish_list.append(get_fish_id(i, TABLE_URL.replace("all2", "fresh")))
+		endemic_fish_list.append(get_fish_id(i, TABLE_URL.replace("all2", "endemic")))
 
 	return endemic_fish_list
 
 #ALTERNATIVA AGIL
-def get_fish_list_by_atribute(pages_n, atribute):
+def update_fish_list_by_atribute():
+	data = get_all_tables()
+	# with open("all_fish.json", "r") as f:
+		# data = json.load(f)
+
 	attr = {
 		'fresh': 72,
 		'saltwater': 26,
@@ -134,12 +151,16 @@ def get_fish_list_by_atribute(pages_n, atribute):
 		'commercial': 5
 	}
 
-	for atributo in attr.keys():
-		for i in range(attr[atribute]):
-			atributo.lista.append(get_fish_id(i, TABLE_URL.replace("all2", atribute.key)))
-	return attr
+	for fish_id in data:
+		for atributo in attr:
+			for i in range(1, attr[atributo]):
+				if fish_id in get_fish_id(i, TABLE_URL.replace("all2", atributo)):
+					data[fish_id][atributo] = True
+	with open("all_fish.json", "w") as f:
+		json.dump(data, f, indent=2)
 
-
+def sort_fishbase():
+	pass
 
 
 def enter_fish_bio(id):

@@ -13,6 +13,8 @@ def brazil_fishbase(page):
 def fishbase_all_fish():
     return crawl.get_all_tables()
 
+# @app.route("/update")
+
 @app.route("/freshwater", methods=["GET"])
 def fishbase_fresh_fish():
     return crawl.get_fresh_tables()
