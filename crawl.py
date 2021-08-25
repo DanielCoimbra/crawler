@@ -66,12 +66,12 @@ def get_all_tables():
 
 	return table_all_fish
 
-#def get_fresh_tables():
-#	table_fresh_fish = {}
-#	for i in range(1,72):
-		# table_fresh_fish.update(get_page_json(i, TABLE_URL.replace("all2", "fresh")))
+def get_fresh_tables():
+	table_fresh_fish = {}
+	for i in range(1,72):
+		table_fresh_fish.update(get_page_json(i, TABLE_URL.replace("all2", "fresh")))
 
-	#return table_fresh_fish
+	return table_fresh_fish
 
 #NOVAS FUNÇÕES
 def get_fish_id(page_n, url):
@@ -120,16 +120,24 @@ def get_endemic_list():
 
 #ALTERNATIVA AGIL
 def get_fish_list_by_atribute(pages_n, atribute):
-	#dict com 'atributo','key','page_n','lista'
-	# for atributo in dict:
-	# 	for i in range(atributo.page_n):
-	# 		atributo.lista.append(get_fish_id(i, TABLE_URL.replace("all2", atribute.key)))
-	# return dict
-	atribute_fish_list = []
-	for i in range(1,pages_n):
-		atribute_fish_list.append(get_fish_id(i, TABLE_URL.replace("all2", atribute)))
+	attr = {
+		'fresh': 72,
+		'saltwater': 26,
+		'introduced': 1,
+		'endemic': 9,
+		'threatened': 3,
+		'dangerous': 6,
+		'reef': 9,
+		'pelagic': 10,
+		'deep': 9,
+		'sports': 5,
+		'commercial': 5
+	}
 
-	return atribute_fish_list
+	for atributo in attr.keys():
+		for i in range(attr[atribute]):
+			atributo.lista.append(get_fish_id(i, TABLE_URL.replace("all2", atribute.key)))
+	return attr
 
 
 
